@@ -1,0 +1,28 @@
+#cloud-config
+
+ssh_keys:
+  ecdsa_private: |
+    ${host_ecdsa_private}
+  ecdsa_public: ${host_ecdsa_public}
+
+package_update: true
+package_upgrade: true
+packages:
+  - unattended-upgrades
+  - apparmor
+  - apparmor-utils
+
+write_files:
+  - path: /tmp/k3s_server.sh
+    permissions: 0744
+    content: |
+      #!/usr/bin/env bash
+      curl -sfL https://get.k3s.io | sh -s - server \
+        --token ${k3s_secret} \
+        --node-name ${node_name} \
+        --tls-san ${k3s_server}
+
+runcmd:
+  - update-alternatives --set iptables /usr/sbin/iptables-legacy
+  - update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+  - bash /tmp/k3s_server.sh

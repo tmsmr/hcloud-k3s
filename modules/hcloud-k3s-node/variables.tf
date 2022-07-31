@@ -1,35 +1,56 @@
 variable "name" {
-  default = "k3s-node"
-}
-
-variable "type" {
-  default = "cx11"
+  description = "Name of the node (Hostname and k3s node name)"
 }
 
 variable "image" {
   default = "debian-11"
 }
 
-variable "placement_group" {}
+variable "type" {
+  default     = "cx11"
+  description = "Server type of the node"
+}
 
-variable "dc" {}
+variable "dc" {
+  description = "Datacenter identifier"
+}
+
+variable "placement_group" {
+  description = "Placement group for the node"
+}
 
 variable "clientkeys" {
-  default = []
+  default     = []
+  description = "Names of SSH-keys for client connections"
 }
 
 variable "firewalls" {
-  default = []
+  default     = []
+  description = "ID's of firewalls to apply"
 }
 
-variable "k3s_is_master" {}
+variable "network_id" {
+  description = "ID of the private network to attach to"
+}
 
-variable "k3s_is_server" {}
+variable "private_ip" {
+  description = "Static IP for the private network NIC"
+}
 
-variable "k3s_token" {}
+variable "k3s_is_server" {
+  default     = false
+  description = "Whether to install this node as K3s server or not"
+}
 
-variable "k3s_master" {}
+variable "k3s_is_initial" {
+  default     = false
+  description = "Initialize the K3s cluster with this node"
+}
 
-variable "k3s_private_ip" {}
+variable "k3s_initial_ip" {
+  description = "IP/Hostname of the initial server of the K3s cluster"
+}
 
-variable "network_id" {}
+variable "k3s_token" {
+  description = "K3s secret token"
+}

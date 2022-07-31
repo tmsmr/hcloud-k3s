@@ -9,43 +9,49 @@ package_update: true
 package_upgrade: true
 packages:
   - unattended-upgrades
-  - apparmor
-  - apparmor-utils
+  - apt-listchanges
 
 write_files:
-  - path: /tmp/k3s_init.sh
+  - path: /tmp/k3s_install.sh
     permissions: 0744
     content: |
       #!/usr/bin/env bash
-      EXTERNAL_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K\S+')
+      
+      set -e
+      
+      EXTERNAL_IP=$(ip route get 8.8.8.8 | grep -oP "src \K\S+")
       PRIVATE_NIC=$(ifconfig | grep -B1 ${k3s_private_ip} | grep -o "^\w*")
-      %{ if k3s_is_master == false }
-      while ! nc -z ${k3s_master} 6443 &> /dev/null; do sleep 1; done
-      %{ endif }
-      %{ if k3s_is_server }
-      curl -sfL https://get.k3s.io | sh -s - server \
-        %{ if k3s_is_master }--cluster-init%{ else }--server https://${k3s_master}:6443%{ endif } \
-        --tls-san ${k3s_private_ip} \
-        --node-taint CriticalAddonsOnly=true:NoExecute \
-        --node-name ${node_name} \
-        --node-ip ${k3s_private_ip} \
-        --node-external-ip $EXTERNAL_IP \
-        --flannel-iface $PRIVATE_NIC \
-        --token ${k3s_token}
-      %{ else }
-      curl -sfL https://get.k3s.io | sh -s - agent \
-        --server https://${k3s_master}:6443 \
-        --node-name ${node_name} \
-        --node-ip ${k3s_private_ip} \
-        --node-external-ip $EXTERNAL_IP \
-        --flannel-iface $PRIVATE_NIC \
-        --token ${k3s_token}
-      %{ endif }
-      %{ if k3s_is_server }
+      
+      %{ if k3s_is_initial == false ~}
+      while ! nc -z ${k3s_initial_ip} 6443 &> /dev/null; do sleep 1; done
+      %{ endif ~}
+      
+      curl -sfL https://get.k3s.io | \
+      %{ if k3s_is_server ~}
+        sh -s - server \
+          %{ if k3s_is_initial ~}
+          --cluster-init \
+          %{ else ~}
+          --server https://${k3s_initial_ip}:6443 \
+          %{ endif ~}
+          --tls-san ${k3s_private_ip} \
+      %{ else ~}
+        sh -s - agent \
+          --server https://${k3s_initial_ip}:6443 \
+      %{ endif ~}
+          --node-name ${k3s_node_name} \
+          --node-ip ${k3s_private_ip} \
+          --node-external-ip $EXTERNAL_IP \
+          --flannel-iface $PRIVATE_NIC \
+          --token ${k3s_token}
+      
+      %{ if k3s_is_server ~}
       cat /etc/rancher/k3s/k3s.yaml | sed s/127\.0\.0\.1/$EXTERNAL_IP/g > /root/k3s-admin.yaml
-      %{ endif }
+      %{ endif ~}
 
 runcmd:
+  - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections
+  - dpkg-reconfigure -f noninteractive unattended-upgrades
   - update-alternatives --set iptables /usr/sbin/iptables-legacy
   - update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-  - bash /tmp/k3s_init.sh
+  - bash /tmp/k3s_install.sh

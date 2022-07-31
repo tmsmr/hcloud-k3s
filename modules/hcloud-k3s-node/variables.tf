@@ -22,8 +22,14 @@ variable "firewalls" {
   default = []
 }
 
+variable "k3s_is_master" {}
+
 variable "k3s_is_server" {}
 
-variable "k3s_secret" {}
+variable "k3s_token" {}
 
-variable "k3s_server" {}
+variable "k3s_master" {}
+
+variable "k3s_private_ip" {}
+
+variable "network_id" {}

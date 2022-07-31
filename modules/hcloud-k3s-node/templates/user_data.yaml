@@ -26,6 +26,7 @@ write_files:
       curl -sfL https://get.k3s.io | sh -s - server \
         %{ if k3s_is_master }--cluster-init%{ else }--server https://${k3s_master}:6443%{ endif } \
         --tls-san ${k3s_private_ip} \
+        --node-taint CriticalAddonsOnly=true:NoExecute \
         --node-name ${node_name} \
         --node-ip ${k3s_private_ip} \
         --node-external-ip $EXTERNAL_IP \

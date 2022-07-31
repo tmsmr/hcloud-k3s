@@ -10,6 +10,8 @@ package_upgrade: true
 packages:
   - unattended-upgrades
   - apt-listchanges
+  - apparmor
+  - apparmor-utils
 
 write_files:
   - path: /tmp/k3s_install.sh

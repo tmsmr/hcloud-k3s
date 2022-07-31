@@ -159,6 +159,7 @@ resource "local_file" "ssh_script_servers" {
   })
   filename        = "bin/ssh-k3s-server-${count.index + 1}"
   file_permission = "700"
+  depends_on = [local_file.known_hosts]
 }
 
 resource "local_file" "ssh_script_agents" {
@@ -168,4 +169,5 @@ resource "local_file" "ssh_script_agents" {
   })
   filename        = "bin/ssh-k3s-agent-${count.index + 1}"
   file_permission = "700"
+  depends_on = [local_file.known_hosts]
 }

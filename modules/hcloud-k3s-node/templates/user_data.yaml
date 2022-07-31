@@ -18,6 +18,7 @@ write_files:
     content: |
       #!/usr/bin/env bash
       EXTERNAL_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K\S+')
+      PRIVATE_NIC=$(ifconfig | grep -B1 ${k3s_private_ip} | grep -o "^\w*")
       %{ if k3s_is_master == false }
       while ! nc -z ${k3s_master} 6443 &> /dev/null; do sleep 1; done
       %{ endif }
@@ -28,6 +29,7 @@ write_files:
         --node-name ${node_name} \
         --node-ip ${k3s_private_ip} \
         --node-external-ip $EXTERNAL_IP \
+        --flannel-iface $PRIVATE_NIC \
         --token ${k3s_token}
       %{ else }
       curl -sfL https://get.k3s.io | sh -s - agent \
@@ -35,6 +37,7 @@ write_files:
         --node-name ${node_name} \
         --node-ip ${k3s_private_ip} \
         --node-external-ip $EXTERNAL_IP \
+        --flannel-iface $PRIVATE_NIC \
         --token ${k3s_token}
       %{ endif }
       %{ if k3s_is_server }

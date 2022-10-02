@@ -25,7 +25,7 @@ resource "hcloud_server" "k3s_node" {
     k3s_is_initial     = var.k3s_is_initial
     k3s_initial_ip     = var.k3s_initial_ip
     k3s_token          = var.k3s_token
-    trusted_proxy      = var.trusted_proxy
+    trusted_proxies    = var.trusted_proxies
   })
   labels = {
     "k3s_type" = var.k3s_is_server ? "server" : "agent"

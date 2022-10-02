@@ -59,6 +59,6 @@ variable "k3s_token" {
   description = "K3s secret token"
 }
 
-variable "trusted_proxy" {
-  description = "IP of the LB to be trusted"
+variable "trusted_proxies" {
+  description = "IP's of Proxies to be trusted"
 }

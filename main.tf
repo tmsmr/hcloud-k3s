@@ -33,7 +33,7 @@ module "hcloud_k3s_server_nodes" {
   k3s_is_initial  = count.index == 0 ? true : false
   k3s_initial_ip  = "${local.k3s_nodes_prefix}.1"
   k3s_token       = random_string.k3s_token.result
-  trusted_proxy   = "${local.k3s_nodes_prefix}.254"
+  trusted_proxies = "${local.k3s_nodes_prefix}.254,${var.k3s_cluster_cidr}"
   k3s_channel     = var.k3s_channel
 }
 
@@ -51,6 +51,6 @@ module "hcloud_k3s_agent_nodes" {
   private_ip      = "${local.k3s_nodes_prefix}.${254 - 1 - count.index}"
   k3s_initial_ip  = "${local.k3s_nodes_prefix}.1"
   k3s_token       = random_string.k3s_token.result
-  trusted_proxy   = "${local.k3s_nodes_prefix}.254"
+  trusted_proxies = "${local.k3s_nodes_prefix}.254,${var.k3s_cluster_cidr}"
   k3s_channel     = var.k3s_channel
 }

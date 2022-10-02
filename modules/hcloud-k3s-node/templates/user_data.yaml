@@ -64,9 +64,7 @@ write_files:
       spec:
         valuesContent: |-
           additionalArguments:
-            - "--entryPoints.web.proxyProtocol.trustedIPs=${trusted_proxy}"
-            - "--entryPoints.web.proxyProtocol.insecure=true"
-            - "--entryPoints.web.forwardedHeaders.trustedIPs=${trusted_proxy}"
+            - "--entryPoints.web.proxyProtocol.trustedIPs=${trusted_proxies}"
 
 runcmd:
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections

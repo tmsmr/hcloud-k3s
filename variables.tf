@@ -54,6 +54,10 @@ variable "k8s_dashboard_version" {
   description = "Version of https://github.com/kubernetes/dashboard"
 }
 
+variable "k3s_cluster_cidr" {
+  description = "CIDR for pod IP's"
+}
+
 variable "hcloud_managed_cert_domains" {
   description = "List of Domains (e.g. ['*.example.com', 'example.com']) for which the LB will issue Certificates for"
 }

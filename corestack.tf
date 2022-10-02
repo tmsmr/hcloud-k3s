@@ -36,3 +36,19 @@ resource "null_resource" "certmanager_manifests" {
   }
   depends_on = [local_file.kubectl_scripts]
 }
+
+resource "null_resource" "k8s_dashboard_manifests" {
+  provisioner "local-exec" {
+    command     = "./bin/kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/${var.k8s_dashboard_version}/aio/deploy/recommended.yaml"
+    interpreter = ["bash", "-c"]
+  }
+  provisioner "local-exec" {
+    command     = <<EOC
+      while ! ./bin/kubectl get ns | grep 'kubernetes-dashboard' &> /dev/null; do sleep 1; done
+      ./bin/kubectl apply -f manifests/k8s_dashboard_admin.yaml
+    EOC
+    interpreter = ["bash", "-c"]
+  }
+
+  depends_on = [local_file.kubectl_scripts]
+}

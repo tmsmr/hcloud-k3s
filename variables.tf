@@ -53,3 +53,7 @@ variable "longhorn_version" {
 variable "certmanager_version" {
   description = "Version of https://github.com/cert-manager/cert-manager"
 }
+
+variable "k8s_dashboard_version" {
+  description = "Version of https://github.com/kubernetes/dashboard"
+}

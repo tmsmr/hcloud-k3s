@@ -18,18 +18,28 @@ resource "hcloud_load_balancer_target" "load_balancer_targets" {
   depends_on       = [hcloud_load_balancer_network.lb_net_attachmant]
 }
 
-resource "hcloud_load_balancer_service" "load_balancer_http_service" {
-  load_balancer_id = hcloud_load_balancer.load_balancer.id
-  protocol         = "tcp"
-  proxyprotocol    = true
-  listen_port = 80
-  destination_port = 80
+resource "hcloud_managed_certificate" "load_balancer_managed_cert" {
+  name         = "managed_cert"
+  domain_names = ["*.tmsmr.de", "tmsmr.de"]
 }
 
 resource "hcloud_load_balancer_service" "load_balancer_https_service" {
   load_balancer_id = hcloud_load_balancer.load_balancer.id
-  protocol         = "tcp"
+  protocol         = "https"
   proxyprotocol    = true
-  listen_port = 443
-  destination_port = 443
+  destination_port = 80
+  http {
+    redirect_http = true
+    certificates  = [hcloud_managed_certificate.load_balancer_managed_cert.id]
+  }
+  health_check {
+    interval = 15
+    port     = 80
+    protocol = "http"
+    timeout  = 5
+    http {
+      path = "/"
+      status_codes = ["2??", "3??", "4??"]
+    }
+  }
 }

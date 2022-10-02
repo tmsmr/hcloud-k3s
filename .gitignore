@@ -1,4 +1,5 @@
 .idea/
 secrets.auto.tfvars
+config.auto.tfvars
 terraform.tfstate*
 .terraform/

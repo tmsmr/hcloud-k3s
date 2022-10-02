@@ -65,6 +65,7 @@ write_files:
         valuesContent: |-
           additionalArguments:
             - "--entryPoints.web.proxyProtocol.trustedIPs=${trusted_proxy}"
+            - "--entryPoints.web.proxyProtocol.insecure=true"
             - "--entryPoints.web.forwardedHeaders.trustedIPs=${trusted_proxy}"
 
 runcmd:

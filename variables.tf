@@ -50,10 +50,10 @@ variable "longhorn_version" {
   description = "Version of https://github.com/longhorn/longhorn"
 }
 
-variable "certmanager_version" {
-  description = "Version of https://github.com/cert-manager/cert-manager"
-}
-
 variable "k8s_dashboard_version" {
   description = "Version of https://github.com/kubernetes/dashboard"
+}
+
+variable "hcloud_managed_cert_domains" {
+  description = "List of Domains (e.g. ['*.example.com', 'example.com']) for which the LB will issue Certificates for"
 }

@@ -12,7 +12,10 @@ resource "null_resource" "upgrade_controller_manifests" {
     interpreter = ["bash", "-c"]
   }
   provisioner "local-exec" {
-    command     = "./bin/kubectl apply -f deployment/k3s_upgrade_plan.yaml"
+    command     = <<EOC
+      while ! ./bin/kubectl get crd | grep 'plans.upgrade.cattle.io' &> /dev/null; do sleep 1; done
+      ./bin/kubectl apply -f deployment/k3s_upgrade_plan.yaml
+    EOC
     interpreter = ["bash", "-c"]
   }
   depends_on = [local_file.kubectl_scripts, local_file.k3s_upgrade_plan]

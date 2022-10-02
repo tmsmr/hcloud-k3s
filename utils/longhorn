@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+BINS=$(dirname "$0")/../bin
+
+echo -e "\033[1mUrl for Longhorn:\033[0m"
+echo http://localhost:8085
+echo
+
+$BINS/kubectl -n longhorn-system port-forward service/longhorn-frontend 8085:80

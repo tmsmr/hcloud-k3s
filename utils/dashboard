@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+BINS=$(dirname "$0")/../bin
+
+echo -e "\033[1mToken for Dashboard:\033[0m"
+$BINS/kubectl -n kubernetes-dashboard create token admin-user
+echo
+
+echo -e "\033[1mUrl for Dashboard:\033[0m"
+echo http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+echo
+
+$BINS/kubectl proxy

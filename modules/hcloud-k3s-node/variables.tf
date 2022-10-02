@@ -37,6 +37,10 @@ variable "private_ip" {
   description = "Static IP for the private network NIC"
 }
 
+variable "k3s_channel" {
+  description = "K3s version channel (https://github.com/k3s-io/k3s/blob/master/channel.yaml)"
+}
+
 variable "k3s_is_server" {
   default     = false
   description = "Whether to install this node as K3s server or not"
@@ -53,4 +57,8 @@ variable "k3s_initial_ip" {
 
 variable "k3s_token" {
   description = "K3s secret token"
+}
+
+variable "trusted_proxy" {
+  description = "IP of the LB to be trusted"
 }

@@ -12,6 +12,7 @@ packages:
   - apt-listchanges
   - apparmor
   - apparmor-utils
+  - open-iscsi
 
 write_files:
   - path: /tmp/k3s_install.sh
@@ -28,7 +29,7 @@ write_files:
       while ! nc -z ${k3s_initial_ip} 6443 &> /dev/null; do sleep 1; done
       %{ endif ~}
       
-      curl -sfL https://get.k3s.io | \
+      curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=${k3s_channel} \
       %{ if k3s_is_server ~}
         sh -s - server \
           %{ if k3s_is_initial ~}
@@ -37,6 +38,7 @@ write_files:
           --server https://${k3s_initial_ip}:6443 \
           %{ endif ~}
           --tls-san ${k3s_private_ip} \
+          --disable local-storage \
       %{ else ~}
         sh -s - agent \
           --server https://${k3s_initial_ip}:6443 \
@@ -50,6 +52,20 @@ write_files:
       %{ if k3s_is_server ~}
       cat /etc/rancher/k3s/k3s.yaml | sed s/127\.0\.0\.1/$EXTERNAL_IP/g > /root/k3s-admin.yaml
       %{ endif ~}
+
+  - path: /var/lib/rancher/k3s/server/manifests/traefik-proxy.yaml
+    permissions: 0744
+    content: |
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: traefik
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          additionalArguments:
+            - "--entryPoints.web.proxyProtocol.trustedIPs=${trusted_proxy}"
+            - "--entryPoints.web.forwardedHeaders.trustedIPs=${trusted_proxy}"
 
 runcmd:
   - echo unattended-upgrades unattended-upgrades/enable_auto_updates boolean true | debconf-set-selections

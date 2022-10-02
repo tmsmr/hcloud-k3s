@@ -36,6 +36,7 @@ resource "null_resource" "kubeconfigs" {
     command     = <<EOC
       while ! ./bin/ssh-k3s-server-1 "cat /root/k3s-admin.yaml &> /dev/null" &> /dev/null; do sleep 1; done
       ./bin/ssh-k3s-server-1 cat /root/k3s-admin.yaml > ./deployment/k3s-admin-server-${count.index + 1}.yaml
+      chmod 400 ./deployment/k3s-admin-server-${count.index + 1}.yaml
     EOC
     interpreter = ["bash", "-c"]
   }
@@ -67,6 +68,22 @@ resource "local_file" "kubectl_scripts" {
     when        = destroy
     command     = <<EOC
       rm ./bin/kubectl || true
+    EOC
+    interpreter = ["bash", "-c"]
+  }
+}
+
+resource "local_file" "helm_script" {
+  content = templatefile("${path.root}/templates/helm.sh", {
+    kubeconfig = "k3s-admin-server-1.yaml"
+  })
+  filename        = "bin/helm"
+  file_permission = "700"
+  depends_on      = [null_resource.kubeconfigs]
+  provisioner "local-exec" {
+    when        = destroy
+    command     = <<EOC
+      rm ./bin/helm || true
     EOC
     interpreter = ["bash", "-c"]
   }

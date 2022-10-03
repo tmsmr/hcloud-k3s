@@ -20,7 +20,7 @@ resource "hcloud_load_balancer_target" "load_balancer_targets" {
 
 resource "hcloud_managed_certificate" "load_balancer_managed_cert" {
   name         = "managed_cert"
-  domain_names = ["*.tmsmr.de", "tmsmr.de"]
+  domain_names = var.hcloud_managed_cert_domains
 }
 
 resource "hcloud_load_balancer_service" "load_balancer_https_service" {

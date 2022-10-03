@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+DEPLOYMENT=$(dirname "$0")/../deployment
+
+KUBECONFIG=$DEPLOYMENT/k3s-admin-server-1.yaml k9s "$@"
